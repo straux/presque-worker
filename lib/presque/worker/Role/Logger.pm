@@ -84,4 +84,12 @@ before _kill_child => sub {
     );
 };
 
+sub log {
+	my( $self, $msg, $level ) = @_;
+	$self->logger->log(
+		message => $msg, 
+		level   => $level || 'info',
+	);
+}
+
 1;
