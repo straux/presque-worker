@@ -42,46 +42,35 @@ sub _load_log_engine {
 
 before start => sub {
     my $self = shift;
-
-    $self->logger->log(
-        level   => 'info',
-        message => "presque worker ["
-          . $self->worker_id
-          . "] : start to listen for "
-          . $self->queue_name
-    );
+    $self->log( 'start to listen for ' . $self->queue_name );
 };
 
 before work => sub {
     my $self = shift;
-    $self->logger->log(
-        level   => 'debug',
-        message => $self->worker_id . ' start to work',
-    );
+    $self->log( 'start to work', 'debug' );
 };
 
 before _shutdown => sub {
     my $self = shift;
-    $self->logger->log(
-        level   => 'info',
-        message => 'worker ' . $self->worker_id . ' shuting down'
-    );
+    $self->log( 'shutting down' );
 };
 
 before _graceful_shutdown => sub {
     my $self = shift;
-    $self->logger->log(
-        level   => 'info',
-        message => 'worker ' . $self->worker_id . ' kill child'
-    );
+    $self->log( 'kill child' );
 };
 
 before _kill_child => sub {
     my $self = shift;
-    $self->logger->log(
-        level   => 'info',
-        message => 'worker ' . $self->worker_id . ' shuting down gracefuly'
-    );
+    $self->log( 'shutting down gracefuly' );
 };
+
+sub log {
+    my( $self, $msg, $level ) = @_;
+    $self->logger->log(
+        message => '['.$self->worker_id.'] '.$msg,
+        level   => $level || 'info',
+    );
+}
 
 1;
