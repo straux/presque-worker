@@ -82,7 +82,7 @@ has rest_client => (
 before start => sub {
     my $self = shift;
     if ($self->meta->find_method_by_name('fail')) {
-        $self->fail_method(1);
+        $self->_fail_method(1);
     }
 };
 
