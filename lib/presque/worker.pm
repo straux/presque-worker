@@ -18,6 +18,7 @@ with qw/
   presque::worker::Role::Context
   presque::worker::Role::Logger/;
 
+has spore_description => ( is => 'ro', isa => 'Str', required => 1, );
 has queue_name => (
     is      => 'rw',
     isa     => 'Str',
@@ -59,16 +60,19 @@ has worker_id => (
         $name;
     }
 );
+
 has rest_client => (
     is      => 'rw',
-    isa     => 'Net::Presque',
+    isa     => 'Object',
     lazy    => 1,
     default => sub {
-        my $self   = shift;
-        my $client = Net::Presque->new(
-            api_base_url => $self->context->{presque}->{url},
-            worker_id    => $self->worker_id
-        );
+        my $self = shift;
+        my $client =
+          Net::HTTP::Spore->new( $self->spore_description,
+            base_url => $self->context->{presque}->{url} );
+        $client->enable('Format::JSON');
+        $client->enable( '+presque::worker::middleware::clientid',
+            worker_id => $self->worker_id );
         $client;
     },
     handles => {
@@ -150,6 +154,8 @@ Worker may implement the B<fail> method. This method have two arguments: the job
 If no job, the worker execute the method B<idle>. By default, this method will sleep a number of seconds defined in the B<interval> attribute.
 
 =head1 ATTRIBUTES
+
+=head2 spore_description
 
 =head2 queue_name
 
