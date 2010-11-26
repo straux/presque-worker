@@ -1,7 +1,7 @@
 package presque::worker::Middleware::ClientID;
 
 use Moose;
-extend 'Net::HTTP::Spore::Middleware';
+extends 'Net::HTTP::Spore::Middleware';
 
 has worker_id => ( is => 'rw', isa => 'Str', predicate => 'has_worker_id' );
 
