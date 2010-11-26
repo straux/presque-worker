@@ -7,7 +7,7 @@ use JSON;
 use Try::Tiny;
 
 use Moose::Role;
-use Net::Presque;
+use Net::HTTP::Spore;
 
 requires 'work';
 
@@ -68,10 +68,10 @@ has rest_client => (
     default => sub {
         my $self = shift;
         my $client =
-          Net::HTTP::Spore->new( $self->spore_description,
+          Net::HTTP::Spore->new_from_spec( $self->spore_description,
             base_url => $self->context->{presque}->{url} );
         $client->enable('Format::JSON');
-        $client->enable( '+presque::worker::middleware::clientid',
+        $client->enable( '+presque::worker::Middleware::ClientID',
             worker_id => $self->worker_id );
         $client;
     },
@@ -101,9 +101,9 @@ sub start {
             );
         }
         catch {
-            $self->logger->error($_) if $_->http_error->code != 404;
+            $self->logger->error($_) if $_->status != 404;
         };
-        $job ? $self->work($job) : $self->idle();
+        $job ? $self->work($job->body) : $self->idle();
     }
 }
 
