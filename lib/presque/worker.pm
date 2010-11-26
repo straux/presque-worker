@@ -18,7 +18,6 @@ with qw/
   presque::worker::Role::Context
   presque::worker::Role::Logger/;
 
-has spore_description => ( is => 'ro', isa => 'Str', required => 1, );
 has queue_name => (
     is      => 'rw',
     isa     => 'Str',
@@ -68,7 +67,7 @@ has rest_client => (
     default => sub {
         my $self = shift;
         my $client =
-          Net::HTTP::Spore->new_from_spec( $self->spore_description,
+          Net::HTTP::Spore->new_from_spec( $self->context->{presque}->{spec},
             base_url => $self->context->{presque}->{url} );
         $client->enable('Format::JSON');
         $client->enable( '+presque::worker::Middleware::ClientID',
