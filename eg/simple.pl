@@ -1,3 +1,4 @@
+
 #!/usr/bin/env perl
 use strict;
 use warnings;
@@ -14,10 +15,13 @@ sub work {
 }
 
 package main;
+
 my $w = myworker->new(
-    base_uri   => 'http://localhost:5000',
-    queue_name => 'foo',
-    fork_dispatcher => 1,
+    base_uri          => 'http://localhost:5000',
+    queue_name        => 'foo',
+    fork_dispatcher   => 1,
+    spore_description => shift,
+    context           => { presque => { url => 'http://localhost:5000' } }
 );
 
 $w->start;
