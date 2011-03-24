@@ -3,6 +3,7 @@ package presque::worker::Role::Job;
 use Try::Tiny;
 use Moose::Role;
 has job_retries    => (is => 'rw', isa => 'Int', default  => 5);
+has delay_on_failure => (is => 'rw', isa => 'Int', default => 0 );
 
 sub _job_failure {
     my ($self, $job, $err) = @_;
@@ -11,7 +12,9 @@ sub _job_failure {
     my $retries = ($job->{retries_left} || $self->job_retries) - 1;
     $job->{retries_left} = $retries;
     try {
-        $self->retry_job(queue_name => $self->queue_name, payload => $job) if $retries > 0;
+        my %args = ( queue_name => $self->queue_name, payload => $job );
+        $args{delayed} = time + $self->delay_on_failure if $self->delay_on_failure;
+        $self->retry_job( %args ) if $retries > 0;
     }
     catch {
         # XXX
