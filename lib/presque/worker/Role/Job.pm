@@ -14,7 +14,11 @@ sub _job_failure {
     try {
         my %args = ( queue_name => $self->queue_name, payload => $job );
         $args{delayed} = time + $self->delay_on_failure if $self->delay_on_failure;
-        $self->retry_job( %args ) if $retries > 0;
+        if( $retries > 0 ) {
+            $self->retry_job( %args );
+        } else {
+            $self->retry_job( lost => 1 );
+        }
     }
     catch {
         # XXX
