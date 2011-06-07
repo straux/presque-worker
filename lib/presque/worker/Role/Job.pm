@@ -18,8 +18,10 @@ sub _job_failure {
     }
     catch {
         # XXX
+        $err ||= '';
+        $err .= " - error on job retry: $_";
     };
-    $self->fail($job, $_) if $self->_has_fail_method;
+    $self->fail($job, $err ) if $self->_has_fail_method;
 }
 
 1;

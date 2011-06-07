@@ -30,7 +30,11 @@ sub _fork_and_work {
 
     my $pid = fork();
     if ($pid == 0) {
-        $self->$orig($job);
+        try {
+            $self->$orig($job);
+        } catch {
+            $self->_job_failure($job, $_);
+        };
         exit;
     }
     elsif ($pid > 0) {
