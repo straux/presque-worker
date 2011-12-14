@@ -14,6 +14,8 @@ has delay_on_failure     => (is => 'rw', isa => 'Int', default => 0 );
 sub _job_failure {
     my ($self, $job, $err) = @_;
 
+    $job ||= {};
+    $job->{fail} ||= [];
     push @{$job->{fail}}, $err;
     # do not get an error stack too big
     if( @{$job->{fail}} > $self->max_error_stack_size ) {
